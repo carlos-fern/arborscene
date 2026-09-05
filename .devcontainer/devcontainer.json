@@ -1,0 +1,26 @@
+{
+    "name": "Robotics C++ Environment",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": ".."
+    },
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "bash",
+                "cmake.configureOnOpen": true,
+                "cmake.generator": "Ninja",
+                "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+                "C_Cpp.default.compileCommands": "${workspaceFolder}/build/compile_commands.json"
+            },
+            "extensions": [
+                "ms-vscode.cpptools",
+                "ms-vscode.cpptools-extension-pack",
+                "ms-vscode.cmake-tools",
+                "twxs.cmake"
+            ]
+        }
+    },
+    "remoteUser": "root",
+    "postCreateCommand": "mkdir -p build && cd build && cmake -G Ninja .."
+}
