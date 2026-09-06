@@ -12,9 +12,9 @@ RUN apt-get update && apt-get install -y \
     nano \
     && rm -rf /var/lib/apt/lists/*
 
-# Create a Conda environment and install our C++ dependencies.
+# Create a Conda environment and install core C++ dependencies.
 # We include 'compilers' to get conda-forge's gcc/g++ which ensures ABI compatibility
-# with the pre-compiled libraries.
+# with pre-compiled libraries like Pinocchio and Coal.
 RUN mamba create -n dev -c conda-forge -y \
     cmake \
     ninja \
@@ -24,8 +24,11 @@ RUN mamba create -n dev -c conda-forge -y \
     coal \
     protobuf \
     libprotobuf \
-    libspatialindex \
     && mamba clean -afy
+
+# Download and install the header-only 'graaf' C++20 graph library directly into the Conda environment
+RUN git clone --depth 1 https://github.com/bobluppes/graaf.git /tmp/graaf && \  
+   cp -r /tmp/graaf /opt/conda/envs/dev/include/
 
 # Setup bash to automatically activate the 'dev' environment upon container entry
 RUN echo "source /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
@@ -34,7 +37,7 @@ RUN echo "source /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
 # Set environment variables so CMake and compilers default to the Conda environment
 ENV CONDA_DEFAULT_ENV=dev
 ENV PATH=/opt/conda/envs/dev/bin:$PATH
-# This is critical: it tells CMake exactly where to find the config files for Pinocchio/Coal
+# This is critical: it tells CMake exactly where to find package config files for Pinocchio/Coal
 ENV CMAKE_PREFIX_PATH=/opt/conda/envs/dev
 
 # Set the working directory to mount your code into
